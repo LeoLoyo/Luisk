@@ -1,8 +1,11 @@
 import React from 'react';
+import { connect } from 'react-redux'
+import { addActions, subActions, getUserActions } from './store/actions'
 import logo from './logo.svg';
 import './App.css';
 
-function App() {
+function App(props) {
+  console.log('props: ', props);
   return (
     <div className="App">
       <header className="App-header">
@@ -16,11 +19,49 @@ function App() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn React
+          Learn React Luisk {props.value} {props.loading ? `cargando`: `buscando`}
         </a>
+
+        <button onClick={props.add}> Add </button>
+        <button onClick={props.sub}> Sub </button>
       </header>
+      <div>
+        <p>
+          <span>Obtener Usuarios</span> <button onClick={props.getUsers}> Buscar</button>
+        </p>
+        <table>
+          <th>ID</th>
+          <th>NAME</th>
+          <th>EMAIL</th>
+          <tbody>
+            { props.users.map((item, index) => (<tr key={index}>
+                <td>{item.id}</td>
+                <td>{item.name}</td>
+                <td>{item.email}</td>
+              </tr>))
+            }
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
 
-export default App;
+const mapStateToProps = ({ app, users }) => {
+  console.log('users: ', users);
+  return ({
+  value: app.value,
+  users: app.users,
+  loading: users.loading
+  
+})
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return ({
+    add: () => dispatch(addActions()),
+    sub: () => dispatch(subActions()),
+    getUsers: () => getUserActions(dispatch),
+  })
+}
+export default connect(mapStateToProps, mapDispatchToProps)(App);
